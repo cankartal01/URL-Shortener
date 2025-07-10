@@ -1,0 +1,141 @@
+/* Genel Ayarlar */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1.2s ease-in-out;
+  }
+  
+  header h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem;
+    text-align: center;
+    color: #4a90e2;
+    margin-bottom: 0;
+  }
+  
+  header .subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #777;
+    margin-top: 5px;
+  }
+  
+  .about {
+    margin-top: 30px;
+  }
+  
+  .about p {
+    font-size: 1.1rem;
+  }
+  
+  .project h3 {
+    color: #4a90e2;
+    margin-top: 20px;
+  }
+  
+  .project h3 span {
+    color: #333;
+  }
+  
+  .desc {
+    margin: 10px 0 20px;
+    color: #555;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  ul li {
+    margin: 8px 0;
+    font-size: 1rem;
+  }
+  
+  .links {
+    text-align: center;
+    margin: 30px 0;
+  }
+  
+  .btn {
+    text-decoration: none;
+    background: #4a90e2;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  
+  .btn:hover {
+    background: #357ab8;
+    transform: scale(1.05);
+  }
+  
+  .tech {
+    margin-top: 40px;
+    text-align: center;
+  }
+  
+  .tech h4 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    color: #4a90e2;
+  }
+  
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .tech-list span {
+    background: #f0f3f7;
+    color: #4a90e2;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .tech-list span:hover {
+    background: #4a90e2;
+    color: #fff;
+  }
+  
+  /* Animasyon */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .container {
+      margin: 20px;
+      padding: 15px;
+    }
+  
+    header h1 {
+      font-size: 2rem;
+    }
+  
+    .btn {
+      width: 100%;
+    }
+  }
+  
