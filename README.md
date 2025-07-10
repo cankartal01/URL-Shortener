@@ -16,4 +16,7 @@ Bu proje, uzun web adreslerini (URL) kısa ve kolay paylaşılabilir bağlantıl
 - **HTML/CSS**
 - **JavaScript**
 
+## 👥 Contributors
+
+- **Mehmet Can Özen** - Contributor 
 
