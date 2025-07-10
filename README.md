@@ -16,16 +16,4 @@ Bu proje, uzun web adreslerini (URL) kısa ve kolay paylaşılabilir bağlantıl
 - **HTML/CSS**
 - **JavaScript**
 
-## Nasıl Kullanılır?
-1. Bu repoyu bilgisayarınıza indirin veya klonlayın:
-   ```bash
-   git clone https://github.com/kullaniciadi/url-kisaltici.git
-   ```
-2. Proje klasöründe `index.html` dosyasını bir tarayıcıda açın.
-3. Dilerseniz `style.css` dosyasını düzenleyerek tasarımı kişiselleştirebilirsiniz.
 
-## Katkı
-Görsel veya içerik geliştirmeleri için pull request gönderebilir veya issue açabilirsiniz.
-
-## Lisans
-Bu tanıtım sitesi MIT lisansı ile lisanslanmıştır. 
