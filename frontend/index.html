@@ -31,6 +31,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ original_url: longUrl }),
           });
+
           const data = await res.json();
           if (data.short_url) {
             resultDiv.innerHTML = `<b>Kısa URL:</b> <a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
