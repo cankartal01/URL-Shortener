@@ -5,9 +5,10 @@ const cors = require('cors');
 
 const pool = new Pool();
 
-pool.connect()
+pool
+  .connect()
   .then(() => console.log('PostgreSQL bağlantısı başarılı!'))
-  .catch(err => console.error('Veritabanı bağlantı hatası:', err));
+  .catch((err) => console.error('Veritabanı bağlantı hatası:', err));
 
 const app = express();
 app.use(cors());
@@ -20,7 +21,8 @@ app.get('/', (req, res) => {
 
 // Rastgele kısa ID üreten fonksiyon
 function generateShortId(length = 6) {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -38,14 +40,16 @@ app.post('/shorten', async (req, res) => {
   // Aynı short_id oluşursa tekrar dene
   let exists = true;
   while (exists) {
-    const check = await pool.query('SELECT 1 FROM urls WHERE short_id = $1', [short_id]);
+    const check = await pool.query('SELECT 1 FROM urls WHERE short_id = $1', [
+      short_id,
+    ]);
     if (check.rowCount === 0) exists = false;
     else short_id = generateShortId();
   }
   try {
     await pool.query(
       'INSERT INTO urls (original_url, short_id) VALUES ($1, $2)',
-      [original_url, short_id]
+      [original_url, short_id],
     );
     res.json({ short_url: `http://localhost:${PORT}/${short_id}` });
   } catch (err) {
@@ -57,12 +61,18 @@ app.post('/shorten', async (req, res) => {
 app.get('/:shortId', async (req, res) => {
   const { shortId } = req.params;
   try {
-    const result = await pool.query('SELECT original_url FROM urls WHERE short_id = $1', [shortId]);
+    const result = await pool.query(
+      'SELECT original_url FROM urls WHERE short_id = $1',
+      [shortId],
+    );
     if (result.rowCount === 0) {
       return res.status(404).send('Kısaltılmış URL bulunamadı.');
     }
     // Tıklama sayısını artır
-    await pool.query('UPDATE urls SET click_count = click_count + 1 WHERE short_id = $1', [shortId]);
+    await pool.query(
+      'UPDATE urls SET click_count = click_count + 1 WHERE short_id = $1',
+      [shortId],
+    );
     // Orijinal URL'ye yönlendir
     res.redirect(result.rows[0].original_url);
   } catch (err) {
@@ -74,7 +84,10 @@ app.get('/:shortId', async (req, res) => {
 app.get('/stats/:shortId', async (req, res) => {
   const { shortId } = req.params;
   try {
-    const result = await pool.query('SELECT original_url, short_id, click_count, created_at FROM urls WHERE short_id = $1', [shortId]);
+    const result = await pool.query(
+      'SELECT original_url, short_id, click_count, created_at FROM urls WHERE short_id = $1',
+      [shortId],
+    );
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Kısaltılmış URL bulunamadı.' });
     }
