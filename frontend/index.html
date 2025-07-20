@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Kısaltıcı</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .container { max-width: 400px; margin: 60px auto; background: #fff; padding: 32px 24px; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+    h1 { text-align: center; color: #333; }
+    input[type="text"] { width: 100%; padding: 10px; margin: 12px 0; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .result, .stats { margin-top: 20px; padding: 12px; background: #e9ecef; border-radius: 4px; }
+    .stats { font-size: 14px; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>URL Kısaltıcı</h1>
+    <input type="text" id="longUrl" placeholder="Uzun URL'yi girin...">
+    <button onclick="shortenUrl()">Kısalt</button>
+    <div class="result" id="result" style="display:none;"></div>
+    <div class="stats" id="stats" style="display:none;"></div>
+  </div>
+  <script>
+    async function shortenUrl() {
+      const longUrl = document.getElementById('longUrl').value;
+      const resultDiv = document.getElementById('result');
+      const statsDiv = document.getElementById('stats');
+      resultDiv.style.display = 'none';
+      statsDiv.style.display = 'none';
+      if (!longUrl) {
+        alert('Lütfen bir URL girin!');
+        return;
+      }
+      try {
+        const res = await fetch('http://localhost:3000/shorten', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ original_url: longUrl })
+        });
+        const data = await res.json();
+        if (data.short_url) {
+          resultDiv.innerHTML = `<b>Kısa URL:</b> <a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
+          resultDiv.style.display = 'block';
+          // İstatistikleri de göster
+          const shortId = data.short_url.split('/').pop();
+          showStats(shortId);
+        } else {
+          resultDiv.innerHTML = 'Bir hata oluştu.';
+          resultDiv.style.display = 'block';
+        }
+      } catch (err) {
+        resultDiv.innerHTML = 'Sunucuya ulaşılamıyor.';
+        resultDiv.style.display = 'block';
+      }
+    }
+    async function showStats(shortId) {
+      const statsDiv = document.getElementById('stats');
+      try {
+        const res = await fetch(`http://localhost:3000/stats/${shortId}`);
+        const data = await res.json();
+        if (data.short_id) {
+          statsDiv.innerHTML = `<b>Oluşturulma:</b> ${new Date(data.created_at).toLocaleString()}<br><b>Tıklanma:</b> ${data.click_count}`;
+          statsDiv.style.display = 'block';
+        }
+      } catch (err) {
+        statsDiv.innerHTML = 'İstatistikler alınamadı.';
+        statsDiv.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html> 
