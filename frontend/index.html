@@ -5,14 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>URL Kısaltıcı</title>
     <link rel="stylesheet" href="style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-      <h1>URL Kısaltıcı</h1>
-      <input type="text" id="longUrl" placeholder="Uzun URL'yi girin..." />
-      <button onclick="shortenUrl()">Kısalt</button>
-      <div class="result" id="result" style="display: none"></div>
-      <div class="stats" id="stats" style="display: none"></div>
+      <div class="header">
+        <h1>URL Kısaltıcı</h1>
+        <div class="auth-links">
+          <a href="login.html" class="btn-secondary">Giriş Yap</a>
+          <a href="register.html" class="btn-primary">Kayıt Ol</a>
+        </div>
+      </div>
+      
+      <div class="main-content">
+        <p class="description">Uzun URL'lerinizi kısa, hatırlanabilir linklere dönüştürün</p>
+        <input type="text" id="longUrl" placeholder="Uzun URL'yi girin..." />
+        <button onclick="shortenUrl()">Kısalt</button>
+        <div class="result" id="result" style="display: none"></div>
+        <div class="stats" id="stats" style="display: none"></div>
+      </div>
+      
+      <div class="features">
+        <div class="feature">
+          <i class="fas fa-link"></i>
+          <h3>Hızlı Kısaltma</h3>
+          <p>URL'lerinizi saniyeler içinde kısaltın</p>
+        </div>
+        <div class="feature">
+          <i class="fas fa-chart-bar"></i>
+          <h3>İstatistikler</h3>
+          <p>Tıklama sayılarını takip edin</p>
+        </div>
+        <div class="feature">
+          <i class="fas fa-shield-alt"></i>
+          <h3>Güvenli</h3>
+          <p>Güvenli ve güvenilir hizmet</p>
+        </div>
+      </div>
     </div>
     <script>
       async function shortenUrl() {

@@ -1,21 +1,36 @@
 {
-  "name": "url",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "url-shortener",
+  "version": "2.0.0",
+  "main": "backend/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node backend/index.js",
+    "dev": "nodemon backend/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup-db": "node database/setup_postgres.js"
   },
-  "keywords": [],
+  "keywords": [
+    "url-shortener",
+    "nodejs",
+    "express",
+    "postgresql"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Modern URL kısaltıcı uygulaması",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
-    "pg": "^8.16.3"
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "nodemon": "^3.0.2",
     "prettier": "^3.6.2"
   }
 }

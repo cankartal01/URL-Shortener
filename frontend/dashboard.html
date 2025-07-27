@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Kısaltıcı - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-link"></i>
+                <span>URL Kısaltıcı</span>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="create">
+                    <i class="fas fa-plus"></i>
+                    <span>Yeni URL</span>
+                </a>
+                <a href="#" class="nav-item" data-section="urls">
+                    <i class="fas fa-list"></i>
+                    <span>URL'lerim</span>
+                </a>
+                <a href="#" class="nav-item" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analitik</span>
+                </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Ayarlar</span>
+                </a>
+            </nav>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span id="username">Kullanıcı</span>
+                    <button onclick="logout()" class="logout-btn">Çıkış</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active">
+                <h1>Dashboard</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-urls">0</h3>
+                            <p>Toplam URL</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-clicks">0</h3>
+                            <p>Toplam Tıklama</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="unique-visitors">0</h3>
+                            <p>Benzersiz Ziyaretçi</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="today-clicks">0</h3>
+                            <p>Bugünkü Tıklama</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="recent-urls">
+                    <h2>Son URL'ler</h2>
+                    <div id="recent-urls-list" class="url-list"></div>
+                </div>
+            </div>
+
+            <!-- Create URL Section -->
+            <div id="create-section" class="section">
+                <h1>Yeni URL Oluştur</h1>
+                <div class="create-form">
+                    <div class="form-group">
+                        <label for="original-url">Orijinal URL</label>
+                        <input type="url" id="original-url" placeholder="https://example.com/very-long-url">
+                    </div>
+                    <div class="form-group">
+                        <label for="custom-alias">Özel İsim (Opsiyonel)</label>
+                        <input type="text" id="custom-alias" placeholder="my-custom-link">
+                    </div>
+                    <div class="form-group">
+                        <label for="expires-at">Son Kullanma Tarihi (Opsiyonel)</label>
+                        <input type="datetime-local" id="expires-at">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Kategori (Opsiyonel)</label>
+                        <select id="category">
+                            <option value="">Kategori Seçin</option>
+                        </select>
+                    </div>
+                    <button onclick="createUrl()" class="btn-primary">
+                        <i class="fas fa-plus"></i>
+                        URL Oluştur
+                    </button>
+                </div>
+            </div>
+
+            <!-- URLs Section -->
+            <div id="urls-section" class="section">
+                <h1>URL'lerim</h1>
+                <div class="urls-header">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-urls" placeholder="URL ara...">
+                    </div>
+                    <div class="filter-options">
+                        <select id="status-filter">
+                            <option value="">Tüm Durumlar</option>
+                            <option value="active">Aktif</option>
+                            <option value="inactive">Pasif</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="urls-list" class="url-list"></div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="section">
+                <h1>Analitik</h1>
+                <div class="analytics-grid">
+                    <div class="chart-container">
+                        <h3>Tıklama Grafiği</h3>
+                        <canvas id="clicks-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Ziyaretçi Grafiği</h3>
+                        <canvas id="visitors-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="section">
+                <h1>Ayarlar</h1>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="profile-username">Kullanıcı Adı</label>
+                        <input type="text" id="profile-username" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-email">Email</label>
+                        <input type="email" id="profile-email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-created">Hesap Oluşturma Tarihi</label>
+                        <input type="text" id="profile-created" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for URL details -->
+    <div id="url-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>URL Detayları</h2>
+            <div id="url-details"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html> 

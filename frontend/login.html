@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Kısaltıcı - Giriş</title>
+    <link rel="stylesheet" href="auth.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-link"></i>
+                <h1>URL Kısaltıcı</h1>
+                <p>Hesabınıza giriş yapın</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i>
+                        Kullanıcı Adı
+                    </label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Şifre
+                    </label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Giriş Yap
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Hesabınız yok mu? <a href="register.html">Kayıt Ol</a></p>
+                <p><a href="index.html">Ana Sayfaya Dön</a></p>
+            </div>
+
+            <div id="message" class="message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html> 
