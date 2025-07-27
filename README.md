@@ -162,15 +162,3 @@ Veritabanı şemasını değiştirdiğinizde, migration script'leri oluşturun v
 3. Değişikliklerinizi commit edin (`git commit -m 'Add amazing feature'`)
 4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
 5. Pull Request oluşturun
-
-## 📝 Lisans
-
-Bu proje ISC lisansı altında lisanslanmıştır.
-
-## 📞 İletişim
-
-Proje hakkında sorularınız için issue açabilir veya pull request gönderebilirsiniz.
-
----
-
-**Not**: Bu uygulama geliştirme amaçlıdır. Production ortamında kullanmadan önce güvenlik önlemlerini artırmanız önerilir.
