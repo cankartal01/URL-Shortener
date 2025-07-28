@@ -134,14 +134,38 @@ function showSection(sectionName) {
 
 // Dashboard istatistikleri
 async function loadDashboardStats() {
-    const data = await apiRequest('/urls/my-urls?limit=1');
+    const data = await apiRequest('/urls/my-urls?limit=1000');
     if (!data) return;
 
     // Basit istatistikler (gerçek uygulamada daha detaylı API'ler olur)
     document.getElementById('total-urls').textContent = data.pagination?.total || 0;
     document.getElementById('total-clicks').textContent = data.urls?.reduce((sum, url) => sum + url.click_count, 0) || 0;
-    document.getElementById('unique-visitors').textContent = 'N/A'; // Gerçek uygulamada hesaplanır
-    document.getElementById('today-clicks').textContent = 'N/A'; // Gerçek uygulamada hesaplanır
+    // Benzersiz ziyaretçi sayısını analytics'ten çek
+const analytics = await apiRequest('/urls/analytics?days=7');
+if (analytics && analytics.visitorsData && analytics.clicksData) {
+    // Toplam benzersiz ziyaretçi (günlük toplamların toplamı)
+    const totalUniqueVisitors = analytics.visitorsData.reduce((sum, item) => sum + item.visitors, 0);
+    document.getElementById('unique-visitors').textContent = totalUniqueVisitors;
+
+    const todayUTC = new Date();
+    todayUTC.setUTCDate(todayUTC.getUTCDate() - 1); // 1 gün geri
+    const yyyy = todayUTC.getUTCFullYear();
+    const mm = String(todayUTC.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(todayUTC.getUTCDate()).padStart(2, '0');
+    const todayDateStr = `${yyyy}-${mm}-${dd}`;
+
+     console.log('clicksData:', analytics.clicksData);
+    console.log('todayDateStr:', todayDateStr);
+
+    // clicksData: [{date: '2025-07-28', clicks: 5}, ...]
+    const todayClicks = analytics.clicksData
+        .filter(item => item.date === todayDateStr)
+        .reduce((sum, item) => sum + item.clicks, 0);
+    document.getElementById('today-clicks').textContent = todayClicks;
+} else {
+    document.getElementById('unique-visitors').textContent = 'N/A';
+    document.getElementById('today-clicks').textContent = 'N/A';
+}
 }
 
 // Son URL'leri yükle
@@ -542,20 +566,6 @@ function createVisitorsChart(visitorsData) {
     // Mevcut grafiği temizle
     if (window.visitorsChart) {
         window.visitorsChart.destroy();
-    }
-
-    // Boş veri durumu için varsayılan değerler
-    if (!visitorsData || visitorsData.length === 0) {
-        visitorsData = [];
-        // Son 7 gün için boş veri oluştur
-        for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            visitorsData.push({
-                date: date.toISOString().split('T')[0],
-                visitors: 0
-            });
-        }
     }
 
     const labels = visitorsData.map(item => {
