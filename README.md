@@ -1,28 +1,33 @@
 # URL Kısaltıcı
 
-Modern ve kullanıcı dostu bir URL kısaltıcı uygulaması. Uzun URL'leri kısa, hatırlanabilir linklere dönüştürür ve tıklama istatistiklerini takip eder.
+Modern ve kullanıcı dostu bir URL kısaltıcı uygulaması. Uzun URL'leri kısa, hatırlanabilir linklere dönüştürür ve tıklama istatistiklerini takip eder. Hem bireysel hem de kurumsal kullanıcılar için hızlı, güvenli ve kolay bir çözüm sunar.
 
 ## 🚀 Özellikler
 
-- **URL Kısaltma**: Uzun URL'leri kısa, özel linklere dönüştürme
-- **İstatistik Takibi**: Her kısaltılmış URL için tıklama sayısı ve oluşturulma tarihi
-- **Modern Arayüz**: Temiz ve kullanıcı dostu web arayüzü
-- **Gerçek Zamanlı Yönlendirme**: Kısa URL'lere tıklandığında anında yönlendirme
-- **PostgreSQL Veritabanı**: Güvenilir veri saklama
+- **URL Kısaltma**: Uzun URL'leri kısa, özel ve paylaşılabilir linklere dönüştürme
+- **İstatistik Takibi**: Her kısaltılmış URL için tıklama sayısı, oluşturulma tarihi ve son erişim zamanı
+- **Modern Arayüz**: Temiz, responsive ve kullanıcı dostu web arayüzü
+- **Gerçek Zamanlı Yönlendirme**: Kısa URL'lere tıklandığında anında yönlendirme ve tıklama kaydı
+- **PostgreSQL Veritabanı**: Güvenilir ve ölçeklenebilir veri saklama
+- **Kullanıcı Yönetimi (isteğe bağlı)**: Kayıt, giriş ve kişisel URL yönetimi
+- **API Desteği**: Dış sistemlerle kolay entegrasyon için RESTful API
+- **Gelişmiş Güvenlik**: Rate limiting, input validation, SQL injection koruması ve CORS yapılandırması
 
-## 🛠️ Teknolojiler
+## 🛠️ Kullanılan Teknolojiler
 
 ### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web framework
-- **PostgreSQL** - Veritabanı
-- **CORS** - Cross-origin resource sharing
-- **dotenv** - Ortam değişkenleri yönetimi
+- **Node.js** – JavaScript runtime ortamı
+- **Express.js** – Hızlı ve esnek web framework
+- **PostgreSQL** – Güçlü ilişkisel veritabanı
+- **CORS** – Güvenli cross-origin istekleri
+- **dotenv** – Ortam değişkenleri yönetimi
+- **JWT** – Kimlik doğrulama (isteğe bağlı)
+- **Helmet** – HTTP güvenlik başlıkları
 
 ### Frontend
-- **HTML5** - Yapısal markup
-- **CSS3** - Styling
-- **Vanilla JavaScript** - İstemci tarafı işlevsellik
+- **HTML5** – Yapısal markup
+- **CSS3** – Modern ve responsive tasarım
+- **Vanilla JavaScript** – İstemci tarafı işlevsellik
 
 ## 📋 Gereksinimler
 
@@ -53,9 +58,12 @@ CREATE TABLE urls (
     original_url TEXT NOT NULL,
     short_id VARCHAR(10) UNIQUE NOT NULL,
     click_count INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_accessed TIMESTAMP
 );
 ```
+
+İsteğe bağlı olarak kullanıcı yönetimi için ek tablolar ekleyebilirsiniz.
 
 ### 4. Ortam Değişkenlerini Ayarlayın
 
@@ -64,6 +72,7 @@ Proje kök dizininde `.env` dosyası oluşturun:
 ```env
 PORT=3000
 DATABASE_URL=postgresql://username:password@localhost:5432/database_name
+JWT_SECRET=your-secret-key
 ```
 
 ### 5. Uygulamayı Başlatın
@@ -120,8 +129,16 @@ GET /stats/:shortId
   "original_url": "https://example.com/very-long-url",
   "short_id": "abc123",
   "click_count": 5,
-  "created_at": "2024-01-15T10:30:00Z"
+  "created_at": "2024-01-15T10:30:00Z",
+  "last_accessed": "2024-01-20T12:00:00Z"
 }
+```
+
+### (İsteğe Bağlı) Kullanıcı İşlemleri
+```
+POST /register
+POST /login
+GET /my-urls
 ```
 
 ## 📁 Proje Yapısı
@@ -129,12 +146,16 @@ GET /stats/:shortId
 ```
 URL/
 ├── backend/
-│   └── index.js          # Express sunucu
+│   ├── index.js          # Express sunucu
+│   ├── auth.js           # Kimlik doğrulama (isteğe bağlı)
+│   └── db.js             # Veritabanı bağlantısı
 ├── frontend/
 │   ├── index.html        # Ana sayfa
-│   └── style.css         # Stiller
+│   ├── style.css         # Stiller
+│   └── app.js            # İstemci tarafı kod
 ├── package.json          # Bağımlılıklar
-└── README.md            # Bu dosya
+├── .env                  # Ortam değişkenleri
+└── README.md             # Bu dosya
 ```
 
 ## 🔒 Güvenlik
@@ -142,14 +163,17 @@ URL/
 - CORS yapılandırması ile güvenli cross-origin istekleri
 - SQL injection koruması için parametreli sorgular
 - Input validation ve sanitization
+- Rate limiting ile kötüye kullanımı önleme
+- JWT ile kimlik doğrulama (isteğe bağlı)
 
-## 🚀 Geliştirme
+## 🚀 Geliştirme ve Katkı
 
 ### Yeni Özellikler Ekleme
 
 1. Backend'de yeni endpoint'ler ekleyin (`backend/index.js`)
 2. Frontend'de yeni UI bileşenleri ekleyin (`frontend/index.html`)
 3. Stilleri güncelleyin (`frontend/style.css`)
+4. Gerekirse veritabanı şemasını güncelleyin
 
 ### Veritabanı Değişiklikleri
 
@@ -162,15 +186,3 @@ Veritabanı şemasını değiştirdiğinizde, migration script'leri oluşturun v
 3. Değişikliklerinizi commit edin (`git commit -m 'Add amazing feature'`)
 4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
 5. Pull Request oluşturun
-
-## 📝 Lisans
-
-Bu proje ISC lisansı altında lisanslanmıştır.
-
-## 📞 İletişim
-
-Proje hakkında sorularınız için issue açabilir veya pull request gönderebilirsiniz.
-
----
-
-**Not**: Bu uygulama geliştirme amaçlıdır. Production ortamında kullanmadan önce güvenlik önlemlerini artırmanız önerilir. 
