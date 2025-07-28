@@ -12,12 +12,18 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 dakika
-  max: 100 // IP başına maksimum 100 istek
-});
-app.use(limiter);
+// Static files - Frontend dosyalarını serve et
+const path = require('path');
+app.use('/frontend', express.static(path.join(__dirname, '../frontend')));
+
+// Rate limiting - Development ortamında devre dışı
+if (process.env.NODE_ENV === 'production') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 dakika
+    max: 500 // IP başına maksimum 500 istek
+  });
+  app.use(limiter);
+}
 
 const PORT = process.env.PORT || 3000;
 

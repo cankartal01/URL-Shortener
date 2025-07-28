@@ -131,6 +131,122 @@ router.get('/my-urls', authenticateToken, async (req, res) => {
   }
 });
 
+// Analitik verilerini getir - Bu route'u diğer parametreli route'lardan önce tanımla
+router.get('/analytics', authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  const { days = 7 } = req.query; // Son kaç günün verisi
+
+  console.log('Analytics endpoint called for user:', userId, 'days:', days);
+
+  try {
+    // Kullanıcının URL'lerini al
+    const userUrlsResult = await pool.query(
+      'SELECT id FROM urls WHERE user_id = $1',
+      [userId]
+    );
+    
+    console.log('User URLs found:', userUrlsResult.rows.length);
+    
+    if (userUrlsResult.rows.length === 0) {
+      console.log('No URLs found for user, returning empty data');
+      return res.json({
+        clicksData: [],
+        visitorsData: [],
+        totalClicks: 0,
+        totalVisitors: 0
+      });
+    }
+
+    const urlIds = userUrlsResult.rows.map(row => row.id);
+    console.log('URL IDs:', urlIds);
+
+    // Son N günün tarih aralığını hesapla
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - parseInt(days));
+
+    // Günlük tıklama verilerini al
+    const clicksResult = await pool.query(`
+      SELECT
+        DATE(clicked_at) as date,
+        COUNT(*) as clicks
+      FROM click_history
+      WHERE url_id = ANY($1)
+        AND clicked_at >= $2
+        AND clicked_at <= $3
+      GROUP BY DATE(clicked_at)
+      ORDER BY date
+    `, [urlIds, startDate, endDate]);
+
+    // Günlük benzersiz ziyaretçi verilerini al
+    const visitorsResult = await pool.query(`
+      SELECT
+        DATE(clicked_at) as date,
+        COUNT(DISTINCT ip_address) as visitors
+      FROM click_history
+      WHERE url_id = ANY($1)
+        AND clicked_at >= $2
+        AND clicked_at <= $3
+      GROUP BY DATE(clicked_at)
+      ORDER BY date
+    `, [urlIds, startDate, endDate]);
+
+    // Toplam istatistikler
+    const totalStatsResult = await pool.query(`
+      SELECT
+        COUNT(*) as total_clicks,
+        COUNT(DISTINCT ip_address) as total_visitors
+      FROM click_history
+      WHERE url_id = ANY($1)
+    `, [urlIds]);
+
+    // Tarih aralığını doldur (eksik günler için 0 değeri)
+    const clicksData = [];
+    const visitorsData = [];
+    const clicksMap = new Map();
+    const visitorsMap = new Map();
+
+    // Veritabanından gelen verileri map'e dönüştür
+    clicksResult.rows.forEach(row => {
+      clicksMap.set(row.date.toISOString().split('T')[0], parseInt(row.clicks));
+    });
+
+    visitorsResult.rows.forEach(row => {
+      visitorsMap.set(row.date.toISOString().split('T')[0], parseInt(row.visitors));
+    });
+
+    // Son N gün için veri dizisini oluştur
+    for (let i = parseInt(days) - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      clicksData.push({
+        date: dateStr,
+        clicks: clicksMap.get(dateStr) || 0
+      });
+
+      visitorsData.push({
+        date: dateStr,
+        visitors: visitorsMap.get(dateStr) || 0
+      });
+    }
+
+    const totalStats = totalStatsResult.rows[0] || { total_clicks: 0, total_visitors: 0 };
+
+    res.json({
+      clicksData,
+      visitorsData,
+      totalClicks: parseInt(totalStats.total_clicks),
+      totalVisitors: parseInt(totalStats.total_visitors)
+    });
+
+  } catch (err) {
+    console.error('Analitik verisi hatası:', err);
+    res.status(500).json({ error: 'Sunucu hatası' });
+  }
+});
+
 // URL istatistikleri
 router.get('/stats/:urlId', authenticateToken, async (req, res) => {
   const { urlId } = req.params;
@@ -200,6 +316,31 @@ router.delete('/:urlId', authenticateToken, async (req, res) => {
   }
 });
 
+// Tek URL bilgilerini getir
+router.get('/:urlId', authenticateToken, async (req, res) => {
+  const { urlId } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    const result = await pool.query(
+      `SELECT id, original_url, short_id, custom_alias, expires_at, is_active,
+              click_count, created_at, updated_at
+       FROM urls
+       WHERE id = $1 AND user_id = $2`,
+      [urlId, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'URL bulunamadı' });
+    }
+
+    res.json({ url: result.rows[0] });
+  } catch (err) {
+    console.error('URL getirme hatası:', err);
+    res.status(500).json({ error: 'Sunucu hatası' });
+  }
+});
+
 // URL güncelleme
 router.put('/:urlId', authenticateToken, async (req, res) => {
   const { urlId } = req.params;
@@ -209,41 +350,40 @@ router.put('/:urlId', authenticateToken, async (req, res) => {
   try {
     // Custom alias kontrolü
     if (custom_alias) {
-      const existingUrl = await dbGet(
-        'SELECT id FROM urls WHERE custom_alias = ? AND id != ?',
+      const existingUrlResult = await pool.query(
+        'SELECT id FROM urls WHERE custom_alias = $1 AND id != $2',
         [custom_alias, urlId]
       );
-      if (existingUrl) {
+      if (existingUrlResult.rows.length > 0) {
         return res.status(400).json({ error: 'Bu özel isim zaten kullanımda' });
       }
     }
 
-    // SQLite'da COALESCE yerine CASE kullanıyoruz
-    const result = await dbRun(
-      `UPDATE urls 
-       SET custom_alias = CASE WHEN ? IS NOT NULL THEN ? ELSE custom_alias END,
-           expires_at = ?,
-           is_active = CASE WHEN ? IS NOT NULL THEN ? ELSE is_active END,
+    // PostgreSQL için güncelleme sorgusu
+    const result = await pool.query(
+      `UPDATE urls
+       SET custom_alias = COALESCE($1, custom_alias),
+           expires_at = $2,
+           is_active = COALESCE($3, is_active),
            updated_at = CURRENT_TIMESTAMP
-       WHERE id = ? AND user_id = ?`,
-      [custom_alias, custom_alias, expires_at, is_active, is_active, urlId, userId]
+       WHERE id = $4 AND user_id = $5
+       RETURNING id, original_url, short_id, custom_alias, expires_at, is_active, click_count, created_at`,
+      [custom_alias, expires_at, is_active, urlId, userId]
     );
 
-    if (result.changes === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: 'URL bulunamadı' });
     }
 
-    // Güncellenmiş URL'yi getir
-    const updatedUrl = await dbGet(
-      'SELECT id, short_id, custom_alias, expires_at, is_active FROM urls WHERE id = ?',
-      [urlId]
-    );
-
-    res.json(updatedUrl);
+    const updatedUrl = result.rows[0];
+    res.json({
+      message: 'URL başarıyla güncellendi',
+      url: updatedUrl
+    });
   } catch (err) {
     console.error('URL güncelleme hatası:', err);
     res.status(500).json({ error: 'Sunucu hatası' });
   }
 });
 
-module.exports = router; 
+module.exports = router;

@@ -365,20 +365,122 @@ nav {
 /* Charts */
 .analytics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
 }
 
 .chart-container {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    min-height: 400px;
+}
+
+.chart-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .chart-container h3 {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     color: #2c3e50;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.chart-container h3::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-radius: 2px;
+    margin-right: 12px;
+}
+
+.chart-container canvas {
+    max-height: 320px !important;
+    width: 100% !important;
+}
+
+/* Analytics section özel stilleri */
+#analytics-section {
+    padding-top: 10px;
+}
+
+#analytics-section h1 {
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+}
+
+#analytics-section h1::before {
+    content: '\f080';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-right: 15px;
+    color: #3498db;
+    font-size: 1.8rem;
+}
+
+/* Grafik yükleme animasyonu */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 320px;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.chart-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ecf0f1;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive chart düzenlemeleri */
+@media (max-width: 1200px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-container {
+        min-height: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        padding: 20px;
+        min-height: 300px;
+    }
+    
+    .chart-container h3 {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+    
+    .chart-container canvas {
+        max-height: 250px !important;
+    }
 }
 
 /* Modal */
@@ -416,6 +518,93 @@ nav {
     color: #2c3e50;
 }
 
+/* Modal Form Styles */
+#url-edit-form .form-group {
+    margin-bottom: 20px;
+}
+
+#url-edit-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+#url-edit-form .form-group input[type="url"],
+#url-edit-form .form-group input[type="text"],
+#url-edit-form .form-group input[type="datetime-local"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+#url-edit-form .form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+#url-edit-form .form-group input[readonly] {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+/* Checkbox Styles */
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    cursor: pointer;
+    font-weight: normal !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto !important;
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+/* Stats Info */
+.stats-info {
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e1e5e9;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.modal-actions button i {
+    margin-right: 8px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -446,4 +635,81 @@ nav {
     .analytics-grid {
         grid-template-columns: 1fr;
     }
-} 
+}
+
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    border-left: 4px solid #3498db;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-success {
+    border-left-color: #27ae60;
+}
+
+.toast-error {
+    border-left-color: #e74c3c;
+}
+
+.toast-warning {
+    border-left-color: #f39c12;
+}
+
+.toast-info {
+    border-left-color: #3498db;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-content i {
+    font-size: 1.2rem;
+}
+
+.toast-success .toast-content i {
+    color: #27ae60;
+}
+
+.toast-error .toast-content i {
+    color: #e74c3c;
+}
+
+.toast-warning .toast-content i {
+    color: #f39c12;
+}
+
+.toast-info .toast-content i {
+    color: #3498db;
+}
+
+.toast-content span {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
