@@ -274,7 +274,7 @@ async function createUrl() {
     const originalUrl = document.getElementById('original-url').value;
     const customAlias = document.getElementById('custom-alias').value;
     const expiresAt = document.getElementById('expires-at').value;
-    const category = document.getElementById('category').value;
+   
 
     if (!originalUrl) {
         showMessage('Lütfen bir URL girin.', 'error');
@@ -287,7 +287,7 @@ async function createUrl() {
             original_url: originalUrl,
             custom_alias: customAlias || undefined,
             expires_at: expiresAt || undefined,
-            category_id: category || undefined
+            
         })
     });
 
@@ -296,7 +296,7 @@ async function createUrl() {
         document.getElementById('original-url').value = '';
         document.getElementById('custom-alias').value = '';
         document.getElementById('expires-at').value = '';
-        document.getElementById('category').value = '';
+       
         
         // Dashboard'a geri dön
         showSection('dashboard');

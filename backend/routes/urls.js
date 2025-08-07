@@ -16,7 +16,7 @@ function generateShortId(length = 6) {
 
 // URL kısaltma (kullanıcı girişi ile)
 router.post('/shorten', authenticateToken, async (req, res) => {
-  const { original_url, custom_alias, expires_at, category_id } = req.body;
+  const { original_url, custom_alias, expires_at} = req.body;
   const userId = req.user.userId;
 
   if (!original_url) {
@@ -55,13 +55,7 @@ router.post('/shorten', authenticateToken, async (req, res) => {
     const url = { id: result.rows[0].id, short_id: shortId, custom_alias };
     const shortUrl = `http://localhost:3000/${url.custom_alias || url.short_id}`;
 
-    // Kategori ekleme
-    if (category_id) {
-      await pool.query(
-        'INSERT INTO url_categories (url_id, category_id) VALUES ($1, $2)',
-        [url.id, category_id]
-      );
-    }
+    
 
     res.json({ 
       short_url: shortUrl,
@@ -84,11 +78,9 @@ router.get('/my-urls', authenticateToken, async (req, res) => {
   try {
     let query = `
       SELECT u.id, u.original_url, u.short_id, u.custom_alias, u.click_count, 
-             u.created_at, u.expires_at, u.is_active,
-             c.name as category_name
+             u.created_at, u.expires_at, u.is_active
       FROM urls u
-      LEFT JOIN url_categories uc ON u.id = uc.url_id
-      LEFT JOIN categories c ON uc.category_id = c.id
+      
       WHERE u.user_id = $1
     `;
     
